@@ -1,0 +1,12 @@
+# Substitua valores do seu domínio/conta. Não contém credenciais.
+aws_region = "us-east-1"
+name = "burstlab"
+certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/00000000-0000-0000-0000-000000000000"
+route53_zone_id = "Z000000000000EXAMPLE"
+dns_name = "burstlab.seudominio.com"
+allowed_ingress_cidr = "203.0.113.10/32"
+image_tag = "lab-v1"
+deploy_apps = false
+rds_multi_az = false
+deletion_protection = true
+final_snapshot_identifier = "burstlab-final-20261015"

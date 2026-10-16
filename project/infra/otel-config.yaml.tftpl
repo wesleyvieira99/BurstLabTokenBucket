@@ -1,0 +1,44 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 127.0.0.1:4317
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: '${service}'
+          scrape_interval: 15s
+          metrics_path: /actuator/prometheus
+          static_configs:
+            - targets: ['127.0.0.1:${port}']
+              labels:
+                service: '${service}'
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 128
+    spike_limit_mib: 32
+  batch:
+    timeout: 5s
+    send_batch_size: 256
+exporters:
+  awsxray:
+    region: '${region}'
+  awsemf:
+    region: '${region}'
+    namespace: BurstLab
+    log_group_name: '${metrics_log_group}'
+    dimension_rollup_option: NoDimensionRollup
+    metric_declarations:
+      - dimensions: [[service, result], [service, reason], [service]]
+        metric_name_selectors: ['^burstlab_.*', '^http_server_requests_.*', '^jvm_memory_used_bytes$']
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [awsxray]
+    metrics:
+      receivers: [prometheus]
+      processors: [memory_limiter, batch]
+      exporters: [awsemf]

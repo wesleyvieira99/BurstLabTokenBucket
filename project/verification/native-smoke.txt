@@ -1,0 +1,4 @@
+PASS sync200, idempotência, conflito409
+PASS burst com orçamento compartilhado; códigos reais: {'200': 8, '429': 56}
+PASS aceitação202, idempotência de job e conflito409; jobId=d6b84ee3-3cbf-4abb-ab5a-42e7bde4435f
+PASS B lento: HTTP 504

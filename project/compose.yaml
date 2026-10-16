@@ -1,0 +1,73 @@
+name: burstlab
+x-app-env: &app-env
+  JDBC_URL: jdbc:postgresql://postgres:5432/burstlab
+  JDBC_USERNAME: burstlab
+  JDBC_PASSWORD: burstlab-local
+  REDIS_URI: redis://redis:6379
+  AWS_REGION: us-east-1
+  SQS_ENDPOINT: http://localstack:4566
+  SQS_QUEUE_URL: http://localstack:4566/queue/us-east-1/000000000000/burstlab-jobs
+  SQS_DLQ_URL: http://localstack:4566/queue/us-east-1/000000000000/burstlab-dlq
+  SERVICE_B_URL: http://service-b:8081
+  LIMITER_CAPACITY: 8
+  LIMITER_RATE: 32
+  LIMITER_CONCURRENCY: 8
+  LIMITER_LEASE_MS: 5000
+x-app: &app
+  restart: unless-stopped
+  mem_limit: 512m
+  cpus: 1
+  stop_grace_period: 35s
+  depends_on:
+    postgres: {condition: service_healthy}
+    redis: {condition: service_healthy}
+    localstack: {condition: service_healthy}
+services:
+  postgres:
+    image: postgres:16.6-alpine
+    environment: {POSTGRES_DB: burstlab, POSTGRES_USER: burstlab, POSTGRES_PASSWORD: burstlab-local}
+    ports: ["127.0.0.1:5432:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck: {test: ["CMD-SHELL", "pg_isready -U burstlab"], interval: 3s, timeout: 2s, retries: 20}
+    mem_limit: 384m
+  redis:
+    image: redis:7.2.7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "64mb", "--maxmemory-policy", "noeviction"]
+    ports: ["127.0.0.1:6379:6379"]
+    volumes: ["redis-data:/data"]
+    healthcheck: {test: ["CMD", "redis-cli", "ping"], interval: 3s, timeout: 2s, retries: 20}
+    mem_limit: 128m
+  localstack:
+    image: localstack/localstack:4.0.3
+    environment: {SERVICES: sqs, AWS_DEFAULT_REGION: us-east-1, SQS_ENDPOINT_STRATEGY: path, LOCALSTACK_HOST: "localstack:4566"}
+    ports: ["127.0.0.1:4566:4566"]
+    volumes: ["./scripts/localstack-init.sh:/etc/localstack/init/ready.d/queues.sh:ro"]
+    healthcheck: {test: ["CMD-SHELL", "awslocal sqs get-queue-url --queue-name burstlab-jobs >/dev/null"], interval: 3s, timeout: 3s, retries: 30}
+    mem_limit: 512m
+  service-b:
+    <<: *app
+    build: {context: ., args: {MODULE: service-b}}
+    environment:
+      <<: *app-env
+      B_LATENCY_MS: 200
+      B_CAPACITY: 8
+      B_FAIL_EVERY: 0
+      ENABLE_DEMO_ADMIN: "true"
+    ports: ["127.0.0.1:8081:8081"]
+  service-a:
+    <<: *app
+    build: {context: ., args: {MODULE: service-a}}
+    environment:
+      <<: *app-env
+      ENABLE_UNPROTECTED: "true"
+    ports: ["127.0.0.1:8080:8080"]
+  worker:
+    <<: *app
+    build: {context: ., args: {MODULE: worker}}
+    environment:
+      <<: *app-env
+      WORKER_CONCURRENCY: 8
+    # No host port: docker compose up -d --scale worker=2 works without collisions.
+volumes:
+  postgres-data:
+  redis-data:

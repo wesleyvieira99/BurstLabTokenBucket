@@ -1,0 +1,12 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><parent><groupId>br.com.burstlab</groupId><artifactId>burstlab</artifactId><version>1.0.0</version></parent><artifactId>common</artifactId><dependencies>
+<dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId></dependency>
+<dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-jdbc</artifactId></dependency>
+<dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-actuator</artifactId></dependency>
+<dependency><groupId>io.micrometer</groupId><artifactId>micrometer-registry-prometheus</artifactId></dependency>
+<dependency><groupId>org.postgresql</groupId><artifactId>postgresql</artifactId><scope>runtime</scope></dependency>
+<dependency><groupId>io.lettuce</groupId><artifactId>lettuce-core</artifactId></dependency>
+<dependency><groupId>software.amazon.awssdk</groupId><artifactId>sqs</artifactId></dependency>
+<dependency><groupId>software.amazon.awssdk</groupId><artifactId>url-connection-client</artifactId></dependency>
+<dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>
+<dependency><groupId>org.testcontainers</groupId><artifactId>junit-jupiter</artifactId><version>${testcontainers.version}</version><scope>test</scope></dependency>
+</dependencies></project>

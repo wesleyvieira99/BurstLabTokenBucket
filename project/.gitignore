@@ -1,0 +1,6 @@
+**/target/
+**/__pycache__/
+results/
+infra/.terraform/
+infra/*.tfstate*
+infra/terraform.tfvars

@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS jobs (
+ id UUID PRIMARY KEY, request_key VARCHAR(128) NOT NULL UNIQUE, payload TEXT NOT NULL,
+ correlation VARCHAR(128) NOT NULL, status VARCHAR(24) NOT NULL DEFAULT 'QUEUED',
+ created_at TIMESTAMPTZ NOT NULL DEFAULT now(), deadline TIMESTAMPTZ NOT NULL,
+ attempts INT NOT NULL DEFAULT 0, owner UUID, locked_until TIMESTAMPTZ,
+ next_attempt TIMESTAMPTZ NOT NULL DEFAULT now(), result TEXT, error TEXT
+);
+CREATE TABLE IF NOT EXISTS outbox (
+ id BIGSERIAL PRIMARY KEY, job_id UUID NOT NULL REFERENCES jobs(id), destination VARCHAR(8) NOT NULL,
+ published_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), UNIQUE(job_id,destination)
+);
+CREATE INDEX IF NOT EXISTS outbox_pending ON outbox(id) WHERE published_at IS NULL;
+CREATE TABLE IF NOT EXISTS b_effects (
+ operation_id VARCHAR(128) PRIMARY KEY, payload TEXT NOT NULL, result TEXT NOT NULL,
+ applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

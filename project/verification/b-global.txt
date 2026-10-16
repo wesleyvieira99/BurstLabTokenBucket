@@ -1,0 +1,4 @@
+PASS: duas réplicas B, 32 chamadas paralelas, 8x200 +24x503; slots PostgreSQL compartilhados
+jobs=1
+outbox_pending=1
+

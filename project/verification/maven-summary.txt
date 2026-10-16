@@ -1,0 +1,13 @@
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.414 s -- in br.com.burstlab.common.RedisLimiterTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in br.com.burstlab.common.PayloadTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.272 s -- in br.com.burstlab.worker.WorkerTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+[INFO] burstlab ........................................... SUCCESS [  0.002 s]
+[INFO] common ............................................. SUCCESS [  8.193 s]
+[INFO] service-a .......................................... SUCCESS [  0.767 s]
+[INFO] service-b .......................................... SUCCESS [  0.487 s]
+[INFO] worker ............................................. SUCCESS [  2.582 s]
+[INFO] BUILD SUCCESS
+[INFO] Total time:  12.361 s
+[INFO] Finished at: 2026-10-15T19:06:20-03:00
